@@ -69,6 +69,7 @@ iterator_t* send_init(void)
 	if (!(ip_out_file = fopen("out_ip_list.txt", "w"))) {
 		log_fatal("send", "could not open IP output file (%s): %s",
 			"out_ip_list.txt", strerror(errno));
+		exit(EXIT_FAILURE);
 	}
 
 	// generate a new primitive root and starting position
