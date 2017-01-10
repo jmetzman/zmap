@@ -298,15 +298,12 @@ int send_run(sock_t st, shard_t *s)
 		  	uint32_t validation[VALIDATE_BYTES/sizeof(uint32_t)];
 			validate_gen(src_ip, curr, (uint8_t *)validation);
 			zconf.probe_module->make_packet(buf, src_ip, curr, validation, i, probe_data);
-			{
+			if (zconf.dryrun) {
 				struct in_addr addr;
 				addr.s_addr = curr;
 				char addr_str_buf[INET_ADDRSTRLEN];
 				const char *addr_str = inet_ntop(AF_INET, &addr, addr_str_buf, INET_ADDRSTRLEN);
 				fprintf(ip_out_file, "%s,", addr_str);
-				log_debug("send", "sending to IP: %s", addr_str);
-			}
-			if (zconf.dryrun) {
 				lock_file(stdout);
 				zconf.probe_module->print_packet(stdout, buf);
 				unlock_file(stdout);
@@ -322,6 +319,11 @@ int send_run(sock_t st, shard_t *s)
 								  inet_ntoa(addr), strerror(errno));
 						s->state.failures++;
 					} else {
+						struct in_addr addr;
+						addr.s_addr = curr;
+						char addr_str_buf[INET_ADDRSTRLEN];
+						const char *addr_str = inet_ntop(AF_INET, &addr, addr_str_buf, INET_ADDRSTRLEN);
+						fprintf(ip_out_file, "%s,", addr_str);
 						break;
 					}
 				}
