@@ -373,8 +373,8 @@ int main(int argc, char *argv[])
 		log_debug("zmap", "no output module provided. will use csv.");
 		zconf.output_module = get_output_module_by_name("csv");
 		zconf.raw_output_fields = (char*) "saddr";
-		zconf.filter_duplicates = 1;
-		zconf.filter_unsuccessful = 1;
+		// zconf.filter_duplicates = 1;
+		// zconf.filter_unsuccessful = 1;
 	} else {
 		zconf.output_module = get_output_module_by_name(args.output_module_arg);
 		if (!zconf.output_module) {
@@ -868,3 +868,4 @@ int main(int argc, char *argv[])
 	free(params);
 	return EXIT_SUCCESS;
 }
+
