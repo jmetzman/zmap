@@ -61,9 +61,15 @@ static uint32_t num_src_addrs;
 // Source ports for outgoing packets
 static uint16_t num_src_ports;
 
+static FILE *ip_out_file = NULL;
+
 // global sender initialize (not thread specific)
 iterator_t* send_init(void)
 {
+	if (!(ip_out_file = fopen("out_ip_list.txt", "w"))) {
+		log_fatal("send", "could not open IP output file (%s): %s",
+			"out_ip_list.txt", strerror(errno));
+	}
 
 	// generate a new primitive root and starting position
 	iterator_t *it;
@@ -291,7 +297,14 @@ int send_run(sock_t st, shard_t *s)
 		  	uint32_t validation[VALIDATE_BYTES/sizeof(uint32_t)];
 			validate_gen(src_ip, curr, (uint8_t *)validation);
 			zconf.probe_module->make_packet(buf, src_ip, curr, validation, i, probe_data);
-
+			{
+				struct in_addr addr;
+				addr.s_addr = curr;
+				char addr_str_buf[INET_ADDRSTRLEN];
+				const char *addr_str = inet_ntop(AF_INET, &addr, addr_str_buf, INET_ADDRSTRLEN);
+				fprintf(ip_out_file, "%s,", addr_str);
+				log_debug("send", "sending to IP: %s", addr_str);
+			}
 			if (zconf.dryrun) {
 				lock_file(stdout);
 				zconf.probe_module->print_packet(stdout, buf);
@@ -325,4 +338,13 @@ int send_run(sock_t st, shard_t *s)
 	}
 	log_debug("send", "thread %hu finished", s->id);
 	return EXIT_SUCCESS;
+}
+
+void send_close(void)
+{
+	if (ip_out_file) {
+		fprintf(ip_out_file, "\n");
+		fflush(ip_out_file);
+		fclose(ip_out_file);
+	}
 }

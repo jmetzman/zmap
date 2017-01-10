@@ -252,6 +252,7 @@ static void start_zmap(void)
 		}
 	}
 	log_debug("zmap", "senders finished");
+	send_close();
 #ifdef PFRING
 	pfring_zc_kill_worker(zw);
 	pfring_zc_sync_queue(zconf.pf.send, tx_only);
