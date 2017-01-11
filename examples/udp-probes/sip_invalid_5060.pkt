@@ -1,0 +1,3 @@
+OPTIONS sip:1@1 SIP/2.0
+Via: SIP/2.0/UDP 1:1;branch=1;rport;alias
+CSeq: 1 OPTIONS

@@ -1,0 +1,9 @@
+OPTIONS sip:1@1 SIP/2.0
+Via: SIP/2.0/UDP 1.1.1.1:1;branch=123asd9359015935;rport;alias
+From: sip:a@1.1.1.1:2;tag=55555555
+To: sip:b@5.5.5.5
+Call-ID: 1@1.1.1.1
+CSeq: 1 OPTIONS
+Contact: sip:a@1.1.1.1:1
+Content-Length: 0
+Accept: text/plain
