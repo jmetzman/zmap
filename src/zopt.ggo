@@ -24,6 +24,9 @@ option "blacklist-file"         b "File of subnets to exclude, in CIDR notation,
 option "whitelist-file"         w "File of subnets to constrain scan to, in CIDR notation, e.g. 192.168.0.0/16"
     typestr="path"
     optional string
+option "output-ip-file"         - "Output file for list of scanned IPs (comma-separated)"
+    typestr="name"
+    optional string
 
 section "Scan options"
 option "rate"                   r "Set send rate in packets/sec"

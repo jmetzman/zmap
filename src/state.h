@@ -91,6 +91,7 @@ struct state_conf {
 	char *output_filename;
 	char *blacklist_filename;
 	char *whitelist_filename;
+	char *output_ip_filename;
 #ifdef JSON
 	char *metadata_filename;
 	FILE *metadata_file;

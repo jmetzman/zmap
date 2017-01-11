@@ -66,9 +66,10 @@ static FILE *ip_out_file = NULL;
 // global sender initialize (not thread specific)
 iterator_t* send_init(void)
 {
-	if (!(ip_out_file = fopen("out_ip_list.txt", "w"))) {
+	// open IP output file
+	if (zconf.output_ip_filename && !(ip_out_file = fopen(zconf.output_ip_filename, "w"))) {
 		log_fatal("send", "could not open IP output file (%s): %s",
-			"out_ip_list.txt", strerror(errno));
+			zconf.output_ip_filename, strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
@@ -299,14 +300,14 @@ int send_run(sock_t st, shard_t *s)
 			validate_gen(src_ip, curr, (uint8_t *)validation);
 			zconf.probe_module->make_packet(buf, src_ip, curr, validation, i, probe_data);
 			if (zconf.dryrun) {
-				struct in_addr addr;
-				addr.s_addr = curr;
-				char addr_str_buf[INET_ADDRSTRLEN];
-				const char *addr_str = inet_ntop(AF_INET, &addr, addr_str_buf, INET_ADDRSTRLEN);
-				fprintf(ip_out_file, "%s,", addr_str);
 				lock_file(stdout);
 				zconf.probe_module->print_packet(stdout, buf);
 				unlock_file(stdout);
+				if (ip_out_file) {
+					struct in_addr addr;
+					addr.s_addr = curr;
+					fprintf(ip_out_file, "%s,", inet_ntoa(addr));
+				}
 			} else {
 				int length = zconf.probe_module->packet_length;
 				void *contents = buf + zconf.send_ip_pkts*sizeof(struct ether_header);
@@ -319,11 +320,11 @@ int send_run(sock_t st, shard_t *s)
 								  inet_ntoa(addr), strerror(errno));
 						s->state.failures++;
 					} else {
-						struct in_addr addr;
-						addr.s_addr = curr;
-						char addr_str_buf[INET_ADDRSTRLEN];
-						const char *addr_str = inet_ntop(AF_INET, &addr, addr_str_buf, INET_ADDRSTRLEN);
-						fprintf(ip_out_file, "%s,", addr_str);
+						if (ip_out_file) {
+							struct in_addr addr;
+							addr.s_addr = curr;
+							fprintf(ip_out_file, "%s,", inet_ntoa(addr));
+						}
 						break;
 					}
 				}
